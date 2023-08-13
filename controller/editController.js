@@ -197,7 +197,7 @@ exports.edit=async(req,res,next)=>{
     const timestamp = new Date().getTime();
     const filePath = path.join(__dirname,`output_${timestamp}.xlsx`);
 const newfilePath=
-'C:/Users/vashisht yadav/Desktop/excel/uploads/'+`output_${timestamp}.xlsx`
+'root/excel/uploads/'+`output_${timestamp}.xlsx`
     console.log(newfilePath)
         await workbook.xlsx.writeFile(newfilePath).then(() => {
           console.log('Excel file edited successfully');
