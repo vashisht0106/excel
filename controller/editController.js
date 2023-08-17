@@ -1,6 +1,6 @@
 const express=require('express');
 const app=express()
-const XLSX = require('xlsx');
+const xlsx = require('xlsx');
 const imageSize = require('image-size');
 const fs = require('fs');
 const path = require('path');
@@ -8,11 +8,13 @@ const mongoose = require('mongoose');
 const ExcelJS=require('exceljs');
 const editModel = require('../Model/editModel');
 
-
+const multer=require('multer')
 
 exports.edit=async(req,res,next)=>{
 
-
+  const jsonData = JSON.parse(req.headers['x-json-data']); // JSON data from headers
+    const name = jsonData.name; // Name from JSON data
+    const url = jsonData.url; // URL from JSON data
 
     try {
         //const workbook = new xl.Workbook();
@@ -20,8 +22,11 @@ exports.edit=async(req,res,next)=>{
     
         const existingWorkbook = new ExcelJS.Workbook();
 
-        const url=req.body.url;
+        //const url='uploads/1691926223788Employee Joining form (1).xlsx';
         console.log("url",url)
+
+//console.log("namenmbv",name)
+
     await existingWorkbook.xlsx.readFile(url).then(()=>{
     
       console.log("Existing Excel file read successfully.");
@@ -31,7 +36,7 @@ exports.edit=async(req,res,next)=>{
     
     if (!existingWorksheet) {
       console.log("Error: Existing worksheet not found.");
-      res.status(500).send("Error editing Excel file: Existing worksheet not found.");
+      res.status(500).send("Error editing Excel file1: Existing worksheet not found.");
       return;
     }
     
@@ -42,8 +47,85 @@ exports.edit=async(req,res,next)=>{
         const worksheet = workbook.addWorksheet('Sheet1');
     
         // Set header name
-        const headerName='backend developer'
-        worksheet.getCell('I1').value = headerName;
+        //const companyName=req.body.compname;
+        worksheet.getCell('D1').value = name;
+     
+        // add logo to excel
+
+
+
+    
+      
+        
+        const sharp = require('sharp');
+
+        const imagePath = req.file.path;
+        // Convert image to PNG format
+        try {
+          const imageBuffer = fs.readFileSync(imagePath);
+          console.log('imageBuffer',imageBuffer)
+          // Convert image to PNG format
+  const pngImageBuffer = await sharp(imageBuffer).toFormat('png').toBuffer();
+  const imageId1 = workbook.addImage({
+    buffer:pngImageBuffer,
+    extension: 'png',
+  });
+  worksheet.addImage(imageId1, {
+    tl: { col: 0, row: 0 }, // Top-left cell coordinates
+    ext: { width: 100, height: 100 }, // Image width and height
+  });
+
+  // Rest of your code to add image to Excel
+} catch (error) {
+  console.error('Error adding image to Excel:', error);
+  // Handle the error appropriately
+}
+
+          //const imageId1 = workbook.addImage({
+          //  buffer:pngImageBuffer,
+          //  extension: 'png',
+          //});
+          //worksheet.addImage(imageId1, {
+          //  tl: { col: 0, row: 0 }, // Top-left cell coordinates
+          //  ext: { width: 100, height: 100 }, // Image width and height
+          //});
+      
+        //  res.status(200).send('Image added to Excel file successfully.');
+        //} catch (error) {
+        //  res.status(500).send('Error editing Excel file');
+        //}
+      
+
+
+
+
+
+
+
+
+
+
+
+        //const imageId1 = workbook.addImage({
+        //  buffer:imageBuffer,
+        //  extension: 'png',
+        //});
+        
+
+
+
+
+
+
+
+
+        
+        //worksheet.addImage(imageId1, {
+        //  tl: { col: 0, row: 0 }, // Top-left cell coordinates
+        //  ext: { width: 100, height: 100 }, // Image width and height
+        //});
+
+        
         // Edit or add data to the worksheet based on user input
         //worksheet.cell(1, 1).string('hello i am come from server');
     
@@ -73,95 +155,29 @@ exports.edit=async(req,res,next)=>{
             newRowNumber++;
           }
         });
-        
-        
-    
-    
-    
-        //customize font size and boldness of font
-        worksheet.getCell('H1').font = {
-          size: 50, // Customize the font size
+          
+      //customize font size and boldness of font
+        worksheet.getCell('D1').font = {
+          size: 16, // Customize the font size
           bold: true, // Make the text bold
         };
     
-    
     // Customize cell padding
-    worksheet.getCell('H1').alignment = {
+    worksheet.getCell('D1').alignment = {
       wrapText: true, // Wrap text within the cell
       vertical: 'middle', // Vertically center the text
       horizontal: 'center', // Horizontally center the text
     };
     
     worksheet.getRow(1).height = 100; // Customize row height
-    worksheet.getColumn('I').width = 50; // Customize column width
+    worksheet.getColumn('D').width = 50; // Customize column width
+    
+    worksheet.getColumn('A').width=40;
     
     
     
     
     
-    
-    
-    //method 3
-    
-    
-    // Remove all borders from row 1
-    //worksheet.getRow(1).eachCell(cell => {
-    //  cell.alignment = { wrapText: true, vertical: 'middle', horizontal: 'center' };
-    //  cell.value = cell.value; // Reset cell value to apply formatting
-    //});
-    
-    //worksheet.getRow(1).removeAllBorders();
-    
-    
-    
-    //method 4
-    
-    // Remove all borders from row 1
-    //worksheet.getRow(1).eachCell(cell => {
-    //  cell.border = {
-    //    top: null,
-    //    bottom: null,
-    //    left: null,
-    //    right: null
-    //  };
-    //});
-    
-    
-    
-    //method 5
-    
-    // Clear styles and borders from row 1
-    //const row1 = worksheet.getRow(1);
-    //row1.eachCell(cell => {
-    //  cell.value = cell.value; // Reset cell value to clear formatting
-    //  cell.alignment = {}; // Clear alignment
-    //});
-    
-    // Clear borders individually
-    // Get a specific range of cells (for example, row 1)
-    //const row1 = worksheet.getRow(1);
-    
-    //// Remove borders using the approach you've mentioned
-    //row1.eachCell(cell => {
-    //  cell.format.border.getItem('InsideHorizontal').style = 'None';
-    //  cell.format.border.getItem('InsideVertical').style = 'None';
-    //  cell.format.border.getItem('EdgeBottom').style = 'None';
-    //  cell.format.border.getItem('EdgeLeft').style = 'None';
-    //  cell.format.border.getItem('EdgeRight').style = 'None';
-    //  cell.format.border.getItem('EdgeTop').style = 'None';
-    //});
-    
-    
-    
-    
-    //const row1 = worksheet.getRow(1);
-    
-    //worksheet.getCell('B1').border = {
-    //  top: {style:'none', color: {argb:'FF00FF00'}},
-    //  left: {style:'none', color: {argb:'FF00FF00'}},
-    //  bottom: {style:'none', color: {argb:'FF00FF00'}},
-    //  right: {style:'none', color: {argb:'FF00FF00'}}
-    //};
     
     const backgroundColor = { argb: 'FFFFFF' };
     
@@ -196,20 +212,20 @@ exports.edit=async(req,res,next)=>{
     
     const timestamp = new Date().getTime();
     const filePath = path.join(__dirname,`output_${timestamp}.xlsx`);
-const newfilePath=
-'root/excel/uploads/'+`output_${timestamp}.xlsx`
-    console.log(newfilePath)
-        await workbook.xlsx.writeFile(newfilePath).then(() => {
+//const newfilePath=
+//'/root/excel/uploads/'+`output_${timestamp}.xlsx`
+    //console.log(newfilePath)
+        await workbook.xlsx.writeFile(filePath).then(() => {
           console.log('Excel file edited successfully');
           
           const newData = new editModel({
-            name:req.body.name ,
+            name:name ,
             url: `uploads/output_${timestamp}.xlsx`,
             tags: 'copy',
           });
           newData.save();
           
-          res.status(200).send(newfilePath);
+          res.status(200).send(filePath);
 
 
 

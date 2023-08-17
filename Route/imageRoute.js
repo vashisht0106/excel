@@ -1,7 +1,7 @@
 const express=require('express')
-const { saveImageControle, original } = require('../Controller/imageController')
+const { saveImageControle, original } = require('../controller/imageController')
 const multer=require('multer');
-const { edit, geteditfile } = require('../Controller/editController');
+const { edit, geteditfile } = require('../controller/editController');
 const router=express.Router()
 // Configure multer
 const storage = multer.diskStorage({
@@ -17,7 +17,11 @@ const upload = multer({ storage });
 
 router.route('/upload').post(upload.single('excelfile'),saveImageControle)
 
-router.route('/edit').post(upload.single(),edit)    
+
+//const storage = multer.memoryStorage();
+//const upload = multer({ storage });
+
+router.route('/edit').post(upload.single('logo'),edit)    
 
 router.route('/get').get(geteditfile)
 router.route('/getorg').get(original)

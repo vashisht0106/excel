@@ -9,7 +9,7 @@ exports.saveImageControle=async(req,res)=>{
       
       const inputString=req.file.path;
 
-      //console.log('inputString',inputString)
+      console.log('inputString',inputString)
       const urlc=inputString.replace(/\\/g,'/');
       const newImage = new imageModel({
         name: req.file.originalname,
