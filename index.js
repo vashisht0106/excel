@@ -7,8 +7,8 @@ const image=require('./Route/imageRoute');
 
 app.use(express.json())
 dotenv.config();
-//const mongo_url='mongodb+srv://modal:12301230@cluster0.hdgpi4p.mongodb.net/excel'
-const mongo_url='mongodb://localhost:27017/excel'
+const mongo_url='mongodb+srv://modal:12301230@cluster0.hdgpi4p.mongodb.net/excel'
+//const mongo_url='mongodb://localhost:27017/excel'
 mongoose.connect(mongo_url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
