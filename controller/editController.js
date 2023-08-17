@@ -211,11 +211,11 @@ exports.edit=async(req,res,next)=>{
     
     
     const timestamp = new Date().getTime();
-    const filePath = path.join(__dirname,`output_${timestamp}.xlsx`);
-//const newfilePath=
-//'/root/excel/uploads/'+`output_${timestamp}.xlsx`
+    //const filePath = path.join(__dirname,`output_${timestamp}.xlsx`);
+const newfilePath=
+'/root/excel/uploads/'+`output_${timestamp}.xlsx`
     //console.log(newfilePath)
-        await workbook.xlsx.writeFile(filePath).then(() => {
+        await workbook.xlsx.writeFile(newfilePath).then(() => {
           console.log('Excel file edited successfully');
           
           const newData = new editModel({
@@ -225,7 +225,7 @@ exports.edit=async(req,res,next)=>{
           });
           newData.save();
           
-          res.status(200).send(filePath);
+          res.status(200).send(newfilePath);
 
 
 
